@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "table-cards"
+version = "0.1.0"
+description = ""
+authors = ["Rafa Molitoris <rafa.molitoris@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pillow = "^10.3.0"
+openpyxl = "^3.1.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
