@@ -1,21 +1,11 @@
-import openpyxl
-from PIL import Image, ImageDraw, ImageFont
 import os
+import pandas as pd
+from PIL import Image, ImageDraw, ImageFont
+
+from utils import get_text_dimensions
 
 
 inch_per_cm = 2.54
-
-
-def get_text_dimensions(text_string: str, font: ImageFont.FreeTypeFont) -> ():
-    """ Calculate size of a text
-    """
-    # https://stackoverflow.com/a/46220683/9263761
-    ascent, descent = font.getmetrics()
-
-    text_width = font.getmask(text_string).getbbox()[2]
-    text_height = font.getmask(text_string).getbbox()[3] + descent
-
-    return (text_width, text_height)
 
 
 def generate_table_cards(iter):
@@ -50,7 +40,7 @@ def generate_table_cards(iter):
     # Create directory to save images
     os.makedirs('output_images', exist_ok=True)
 
-    for index, row in enumerate(iter, start=1):
+    for index, row in iter:
         nachname, vorname = row
         image = Image.new('RGB', (round(width), round(height)), 'white')
         draw = ImageDraw.Draw(image)
@@ -102,7 +92,6 @@ def generate_table_cards(iter):
 
 if __name__ == '__main__':
     # Load workbook and select active sheet
-    workbook = openpyxl.load_workbook('guestlist.xlsx')
-    sheet = workbook.active
+    df = pd.read_csv('guestlist.csv', delimiter=';')
     
-    generate_table_cards(sheet.iter_rows(values_only=True))
+    generate_table_cards(df.iterrows())
