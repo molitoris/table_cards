@@ -1,3 +1,5 @@
 
 private/
 output_images/
+
+__pycache__/
