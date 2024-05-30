@@ -82,7 +82,7 @@ def generate_table_cards(iter):
         draw.text((x, y), text, fill="black", font=font)
 
         # Save the image
-        image_path = os.path.join('output_images', f'{index}_{vorname}_{nachname}.jpg')
+        image_path = os.path.join('output_images', f'{index:02d}_{vorname}_{nachname}.jpg')
         image.save(image_path, 'JPEG', quality=95)
 
         print(f'Image saved: {image_path}')
