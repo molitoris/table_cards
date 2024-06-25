@@ -1,14 +1,15 @@
 import os
+import pathlib
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
-from utils import get_text_dimensions
+from table_cards.utils import get_text_dimensions
 
 
 inch_per_cm = 2.54
 
 
-def generate_table_cards(iter):
+def generate_table_cards(iter, output_dir: pathlib.Path):
     """ Generate a folded table card (8.5 cm x 5.5 cm) from a A6 card"""
 
     # Settings for the image
@@ -38,7 +39,7 @@ def generate_table_cards(iter):
     png_image_resized = png_image.resize((scale_width, scale_height), Image.ADAPTIVE)
 
     # Create directory to save images
-    os.makedirs('output_images', exist_ok=True)
+    output_dir.mkdir(exist_ok=True)
 
     for index, row in iter:
         nachname, vorname = row
@@ -82,7 +83,7 @@ def generate_table_cards(iter):
         draw.text((x, y), text, fill="black", font=font)
 
         # Save the image
-        image_path = os.path.join('output_images', f'{index:02d}_{vorname}_{nachname}.jpg')
+        image_path = output_dir.joinpath(f'{index:02d}_{vorname}_{nachname}').with_suffix('.jpg')
         image.save(image_path, 'JPEG', quality=95)
 
         print(f'Image saved: {image_path}')
@@ -95,5 +96,7 @@ if __name__ == '__main__':
     df = pd.read_csv('guestlist.csv', delimiter=';')
 
     df1 = df.loc[df['apero'] == 0, ['Vorname', 'Nachname']]
+
+    output_dir = pathlib.Path('output_images')
     
-    generate_table_cards(df1.iterrows())
+    generate_table_cards(df1.iterrows(), output_dir=output_dir)
