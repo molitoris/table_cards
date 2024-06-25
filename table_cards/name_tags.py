@@ -6,7 +6,7 @@ import pandas as pd
 from pydantic import BaseModel
 
 from reportlab.lib.pagesizes import A4, landscape
-from reportlab.lib.units import cm, mm
+from reportlab.lib.units import cm
 from reportlab.lib.colors import red
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -32,7 +32,6 @@ class NameTagConfig(BaseModel):
     font_size: int = 20
 
 
-
 def get_heart_coords():
     t = np.linspace(0, 2 * np.pi, 1000)
     x = 16 * np.sin(t) ** 3
@@ -42,7 +41,7 @@ def get_heart_coords():
     x -= min(x)
     y -= min(y)
 
-    # Scale to width of 1 
+    # Scale to width of 1
     x *= 1 / max(x)
     y *= 1 / max(y)
 
@@ -59,22 +58,25 @@ def grid_on_page(width: float, height: float, page_dim: Tuple[float, float]):
 
     return rows, cols
 
+
 def generte_name_tags(df: pd.DataFrame, output_file: pathlib.Path, conf: NameTagConfig):
-    
+
     # Calculate number of rows and cols per page
-    rows, cols = grid_on_page(width=(conf.obj_width + conf.obj_paddingX), height=(conf.obj_height + conf.obj_paddingY), page_dim=conf.page_dim)
-    
+    rows, cols = grid_on_page(width=(conf.obj_width + conf.obj_paddingX),
+                              height=(conf.obj_height + conf.obj_paddingY),
+                              page_dim=conf.page_dim)
+
     # Get base format of heart
     x, y = get_heart_coords()
 
     can = canvas.Canvas(str(output_file.absolute()), pagesize=conf.page_dim)
     can.setStrokeColor(red)
-    
+
     for index, (lastname, firstname) in df.iterrows():
 
         # Calculate grid position on page
         col = index % cols
-        row = (index % (rows * cols))  // cols
+        row = (index % (rows * cols)) // cols
 
         print(f'Index: {index}, row: {row}, col: {col}')
 
@@ -88,7 +90,8 @@ def generte_name_tags(df: pd.DataFrame, output_file: pathlib.Path, conf: NameTag
         current_y = y * conf.obj_height + offsetY
 
         # Convert coordinates into a tuples with (x1, y1, x2, y2), ...
-        linelist = [(current_x[i], current_y[i], current_x[i+1], current_y[i+1]) for i in range(len(x)-1)]
+        linelist = [(current_x[i], current_y[i], current_x[i + 1],
+                     current_y[i + 1]) for i in range(len(x) - 1)]
 
         # Draw heart shape
         can.lines(linelist)
@@ -101,13 +104,14 @@ def generte_name_tags(df: pd.DataFrame, output_file: pathlib.Path, conf: NameTag
         text_width = pdfmetrics.stringWidth(firstname, conf.font_name, font_size)
 
         # Add text horizontally centered
-        can.drawString((offsetX + conf.obj_width/2) - text_width / 2, (offsetY + 2.5 * cm), firstname)
+        can.drawString((offsetX + conf.obj_width / 2) - text_width / 2, (offsetY + 2.5 * cm),
+                       firstname)
 
         if index > 0 and (index + 1) % (cols * rows) == 0:
             print('Next page')
             can.showPage()
             can.setStrokeColor(red)
-    
+
     can.save()
     print(f'Processed {index} elements')
     return index + 1
@@ -123,7 +127,3 @@ if __name__ == '__main__':
     output_file = pathlib.Path('./test').with_suffix('.pdf')
 
     generte_name_tags(df, output_file=output_file, conf=c)
-
-
-        
-    
