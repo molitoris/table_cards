@@ -93,5 +93,7 @@ def generate_table_cards(iter):
 if __name__ == '__main__':
     # Load workbook and select active sheet
     df = pd.read_csv('guestlist.csv', delimiter=';')
+
+    df1 = df.loc[df['apero'] == 0, ['Vorname', 'Nachname']]
     
-    generate_table_cards(df.iterrows())
+    generate_table_cards(df1.iterrows())
