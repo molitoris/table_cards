@@ -2,8 +2,8 @@ import pytest
 import pandas as pd
 from faker import Faker
 
-from table_cards.table_cards import generate_table_cards
-from table_cards.name_tags import generte_name_tags, NameTagConfig
+from src.table_cards import generate_table_cards
+from src.name_tags import generte_name_tags, NameTagConfig
 
 
 fake = Faker()

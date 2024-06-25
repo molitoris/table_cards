@@ -2,7 +2,7 @@ import pathlib
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
-from table_cards.utils import get_text_dimensions
+from src.utils import get_text_dimensions
 
 
 inch_per_cm = 2.54
