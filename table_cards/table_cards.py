@@ -1,4 +1,3 @@
-import os
 import pathlib
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
@@ -15,7 +14,7 @@ def generate_table_cards(iter, output_dir: pathlib.Path):
     # Settings for the image
     dpi = 300
     width, height = (10.5 * dpi / inch_per_cm, 14.8 * dpi / inch_per_cm)  # A6
-    
+
     # Font settings
     font_path = "Quicksand.ttf"  # Path to font
     font_size = 130
@@ -73,7 +72,7 @@ def generate_table_cards(iter, output_dir: pathlib.Path):
         text_width, _ = get_text_dimensions(text, font=font)
 
         # Calculate position
-        x = (int)((right_line_x- text_width) /2)  # Vertical centered
+        x = (int)((right_line_x - text_width) / 2)  # Vertical centered
         y = (height / 2) + (3 * dpi / 2.54)  # 3cm below horizontal center line
 
         if x <= 20:
@@ -98,5 +97,5 @@ if __name__ == '__main__':
     df1 = df.loc[df['apero'] == 0, ['Vorname', 'Nachname']]
 
     output_dir = pathlib.Path('output_images')
-    
+
     generate_table_cards(df1.iterrows(), output_dir=output_dir)
