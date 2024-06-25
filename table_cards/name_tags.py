@@ -59,6 +59,8 @@ if __name__ == '__main__':
 
     df = pd.read_csv('guestlist.csv', delimiter=';')
 
+    df = df.loc[:, ['Nachname', 'Vorname']]
+
     rows, cols = grid_on_page(width=(obj_width + obj_paddingX), height=(obj_height + obj_paddingY), page_dim=page_dim)
     x, y = get_heart_coords()
 
