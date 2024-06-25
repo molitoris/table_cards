@@ -1,7 +1,9 @@
+import pathlib
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
-
-from typing import Tuple
+from pydantic import BaseModel
 
 from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.units import cm, mm
@@ -9,6 +11,26 @@ from reportlab.lib.colors import red
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
+
+
+class NameTagConfig(BaseModel):
+    page_paddingX: float = 1 * cm
+    page_paddingY: float = 0.8 * cm
+
+    # Width of object itself
+    obj_width: float = 4.8 * cm
+    obj_height: float = 4.3 * cm
+
+    # Width between two objects
+    obj_paddingX: float = 0.5 * cm
+    obj_paddingY: float = 0.2 * cm
+
+    page_dim: Tuple[float, float] = landscape(A4)
+
+    font_path: str = './QuicksandBold700.ttf'
+    font_name: str = 'Quicksand Bold'
+    font_size: int = 20
+
 
 
 def get_heart_coords():
@@ -37,35 +59,17 @@ def grid_on_page(width: float, height: float, page_dim: Tuple[float, float]):
 
     return rows, cols
 
-
-if __name__ == '__main__':
-
-    page_paddingX = 1 * cm
-    page_paddingY = 0.8 * cm
-
-    # Width of object itself
-    obj_width = 4.8 * cm
-    obj_height = 4.3 * cm
-
-    # Width between two objects
-    obj_paddingX = 0.5 * cm
-    obj_paddingY = 0.2 * cm
-
-    page_dim = landscape(A4)
-
-    font_path = './QuicksandBold700.ttf'
-    font_name = 'Quicksand Bold'
-    font_size = 20
-
-    df = pd.read_csv('guestlist.csv', delimiter=';')
-
-    df = df.loc[:, ['Nachname', 'Vorname']]
-
-    rows, cols = grid_on_page(width=(obj_width + obj_paddingX), height=(obj_height + obj_paddingY), page_dim=page_dim)
+def generte_name_tags(df: pd.DataFrame, output_file: pathlib.Path, conf: NameTagConfig):
+    
+    # Calculate number of rows and cols per page
+    rows, cols = grid_on_page(width=(conf.obj_width + conf.obj_paddingX), height=(conf.obj_height + conf.obj_paddingY), page_dim=conf.page_dim)
+    
+    # Get base format of heart
     x, y = get_heart_coords()
 
-    c = canvas.Canvas(f"heart.pdf", pagesize=page_dim)
-    c.setStrokeColor(red)
+    can = canvas.Canvas(str(output_file.absolute()), pagesize=conf.page_dim)
+    can.setStrokeColor(red)
+    
     for index, (lastname, firstname) in df.iterrows():
 
         # Calculate grid position on page
@@ -74,38 +78,52 @@ if __name__ == '__main__':
 
         print(f'Index: {index}, row: {row}, col: {col}')
 
-        pdfmetrics.registerFont(TTFont(font_name, font_path))
+        pdfmetrics.registerFont(TTFont(conf.font_name, conf.font_path))
 
-        offsetX = page_paddingX + (obj_width + obj_paddingX) * col
-        offsetY = page_paddingY + (obj_height + obj_paddingY) * row
+        offsetX = conf.page_paddingX + (conf.obj_width + conf.obj_paddingX) * col
+        offsetY = conf.page_paddingY + (conf.obj_height + conf.obj_paddingY) * row
 
         # Calculate current offset
-        current_x = x * obj_width + offsetX
-        current_y = y * obj_height + offsetY
+        current_x = x * conf.obj_width + offsetX
+        current_y = y * conf.obj_height + offsetY
 
         # Convert coordinates into a tuples with (x1, y1, x2, y2), ...
         linelist = [(current_x[i], current_y[i], current_x[i+1], current_y[i+1]) for i in range(len(x)-1)]
 
         # Draw heart shape
-        c.lines(linelist)
+        can.lines(linelist)
 
         # Configure font
         font_size = 18 if len(firstname) > 11 else 22
-        c.setFont(font_name, font_size)
+        can.setFont(conf.font_name, font_size)
 
         # Calculate width of text
-        text_width = pdfmetrics.stringWidth(firstname, font_name, font_size)
+        text_width = pdfmetrics.stringWidth(firstname, conf.font_name, font_size)
 
         # Add text horizontally centered
-        c.drawString((offsetX + obj_width/2) - text_width / 2, (offsetY + 2.5 * cm), firstname)
+        can.drawString((offsetX + conf.obj_width/2) - text_width / 2, (offsetY + 2.5 * cm), firstname)
 
         if index > 0 and (index + 1) % (cols * rows) == 0:
             print('Next page')
-            c.showPage()
-            c.setStrokeColor(red)
+            can.showPage()
+            can.setStrokeColor(red)
     
-    c.save()
+    can.save()
     print(f'Processed {index} elements')
+    return index + 1
+
+
+if __name__ == '__main__':
+
+    c = NameTagConfig()
+
+    df = pd.read_csv('private/guestlist.csv', delimiter=';')
+    df = df.loc[:, ['Nachname', 'Vorname']]
+
+    output_file = pathlib.Path('./test').with_suffix('.pdf')
+
+    generte_name_tags(df, output_file=output_file, conf=c)
+
 
         
     

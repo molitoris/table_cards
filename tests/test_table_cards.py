@@ -3,6 +3,7 @@ import pandas as pd
 from faker import Faker
 
 from table_cards.table_cards import generate_table_cards
+from table_cards.name_tags import generte_name_tags, NameTagConfig
 
 
 fake = Faker()
@@ -28,3 +29,15 @@ def test_if_correct_no_of_table_cards_are_generated(tmp_path):
     
     # Check that the number of generated files matches the expected number
     assert len(generated_files) == exp_elements
+
+
+def test_if_correct_no_of_name_tages_are_generated(tmp_path):
+    exp_elements = 20
+    
+    df = create_fake_dataframe(exp_elements)
+
+    conf = NameTagConfig()
+
+    act_elements = generte_name_tags(df, tmp_path.joinpath('hearts.pdf'), conf=conf)
+
+    assert act_elements == exp_elements
