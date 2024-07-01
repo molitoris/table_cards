@@ -20,7 +20,7 @@ setuptools = "^70.1.1"
 pylama = "^8.4.1"
 pytest = "^8.2.2"
 coverage = "^7.5.4"
-faker = "^25.9.1"
+faker = "^26.0.0"
 
 [build-system]
 requires = ["poetry-core"]
