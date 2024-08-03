@@ -16,7 +16,7 @@ pydantic = "^2.7.4"
 
 
 [tool.poetry.group.tests.dependencies]
-setuptools = "^70.1.1"
+setuptools = "^72.0.0"
 pylama = "^8.4.1"
 pytest = "^8.2.2"
 coverage = "^7.5.4"
