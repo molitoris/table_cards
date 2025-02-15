@@ -135,18 +135,17 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "faker"
-version = "33.3.1"
+version = "36.1.1"
 description = "Faker is a Python package that generates fake data for you."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "Faker-33.3.1-py3-none-any.whl", hash = "sha256:ac4cf2f967ce02c898efa50651c43180bd658a7707cfd676fcc5410ad1482c03"},
-    {file = "faker-33.3.1.tar.gz", hash = "sha256:49dde3b06a5602177bc2ad013149b6f60a290b7154539180d37b6f876ae79b20"},
+    {file = "Faker-36.1.1-py3-none-any.whl", hash = "sha256:ad1f1be7fd692ec0256517404a9d7f007ab36ac5d4674082fa72404049725eaa"},
+    {file = "faker-36.1.1.tar.gz", hash = "sha256:7cb2bbd4c8f040e4a340ae4019e9a48b6cf1db6a71bda4e5a61d8d13b7bef28d"},
 ]
 
 [package.dependencies]
-python-dateutil = ">=2.4"
-typing-extensions = "*"
+tzdata = "*"
 
 [[package]]
 name = "iniconfig"
@@ -781,4 +780,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "2c29aeba21f266e31e2b7f630a7ddb77380acde5459fa173ea00af2193f87e31"
+content-hash = "b0412e109803c66df33c5ad7381e86f656341275bf3de49685593d84fbc76cbd"
